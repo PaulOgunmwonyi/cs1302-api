@@ -32,13 +32,15 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.control.Labeled;
 import javafx.scene.paint.Paint;
 import javafx.scene.paint.Color;
+import javafx.scene.control.ComboBox;
 
 /**
- * This project is a random anime quote generator that can be later used to translate that quote
+ * This project is a random quote generator that can be later used to translate that quote
  * into one of the displayed languages.
- * On the first scene of the project several quotes are displayed with a button next to each quote.
+ * On the first scene of the project the user can choose a category and then several quotes
+ * from that category are displayed with a button next to each quote.
  * The user chooses whichever quote interests them and clicks the corresponding button.
- * This takes them to a new scene where the quote, its anime and the character who said it are
+ * This takes them to a new scene where the quote, its category and the person who said it are
  * are displayed.
  * Below this are several buttons with languages the user can turn the quote into.
  * After they click the language the quote is displayed below.
@@ -61,6 +63,7 @@ public class ApiApp extends Application {
     private HBox quoteBar6;
 
     private Label title;
+    private ComboBox<String> dropDown;
     private Button quoteGenerator;
     private Label quote1;
     private Label quote2;
@@ -81,15 +84,17 @@ public class ApiApp extends Application {
     public ApiApp() {
         root1 = new VBox(5);
         scene1TopRow = new HBox(5);
-        instructions1 = new Label("Click generate to generate random anime quotes. Once" +
-            " you get a quote you like click the button next to it to choose it");
+        instructions1 = new Label("Select your preferred category from the drop down and then" +
+            " click generate to generate random quotes. Once you get a quote you like click the" +
+            " button next to it to choose it");
         quoteBar1 = new HBox();
         quoteBar2 = new HBox();
         quoteBar3 = new HBox();
         quoteBar4 = new HBox();
         quoteBar5 = new HBox();
         quoteBar6 = new HBox();
-        title = new Label("ANIME QUOTE GENERATOR & TRANSLATOR");
+        title = new Label("RANDOM QUOTE GENERATOR & TRANSLATOR");
+        dropDown = new ComboBox<String>();
         quoteGenerator = new Button("Generate");
         quote1 = new Label("Waiting for quotes...");
         quote2 = new Label("Waiting for quotes...");
@@ -111,7 +116,7 @@ public class ApiApp extends Application {
         // creates the appearance of the initial scene
         root1.getChildren().addAll(scene1TopRow, instructions1, quoteBar1, quoteBar2, quoteBar3,
             quoteBar4, quoteBar5, quoteBar6);
-        scene1TopRow.getChildren().addAll(title, quoteGenerator);
+        scene1TopRow.getChildren().addAll(title, dropDown, quoteGenerator);
         quoteBar1.getChildren().addAll(quote1, button1);
         quoteBar2.getChildren().addAll(quote2, button2);
         quoteBar3.getChildren().addAll(quote3, button3);
@@ -119,8 +124,11 @@ public class ApiApp extends Application {
         quoteBar5.getChildren().addAll(quote5, button5);
         quoteBar6.getChildren().addAll(quote6, button6);
         title.setMaxWidth(Double.MAX_VALUE);
+        dropDown.getItems().addAll("age", "anger", "beauty", "courage", "fitness", "funny",
+            "happiness", "humor", "inspirational", "love", "money");
+        dropDown.getSelectionModel().select(0);
         instructions1.setTextAlignment(TextAlignment.CENTER);
-        instructions1.setMaxWidth(500);
+        instructions1.setMaxWidth(600);
         instructions1.setWrapText(true);
         quoteBar1.setPrefHeight(60);
         quoteBar2.setPrefHeight(60);
@@ -141,17 +149,17 @@ public class ApiApp extends Application {
         HBox.setHgrow(quote4, Priority.ALWAYS);
         HBox.setHgrow(quote5, Priority.ALWAYS);
         HBox.setHgrow(quote6, Priority.ALWAYS);
-        quote1.setMaxWidth(360);
+        quote1.setMaxWidth(460);
         quote1.setWrapText(true);
-        quote2.setMaxWidth(360);
+        quote2.setMaxWidth(460);
         quote2.setWrapText(true);
-        quote3.setMaxWidth(360);
+        quote3.setMaxWidth(460);
         quote3.setWrapText(true);
-        quote4.setMaxWidth(360);
+        quote4.setMaxWidth(460);
         quote4.setWrapText(true);
-        quote5.setMaxWidth(360);
+        quote5.setMaxWidth(460);
         quote5.setWrapText(true);
-        quote6.setMaxWidth(360);
+        quote6.setMaxWidth(460);
         quote6.setWrapText(true);
         setAesthetics();
     } // init
@@ -165,7 +173,7 @@ public class ApiApp extends Application {
         stage.setTitle("ApiApp!");
         stage.setScene(scene1);
         stage.setOnCloseRequest(event -> Platform.exit());
-        stage.setWidth(500);
+        stage.setWidth(600);
         stage.setHeight(500);
         stage.show();
         stage.setResizable(false);
