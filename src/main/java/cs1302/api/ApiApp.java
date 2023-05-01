@@ -29,10 +29,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.scene.layout.Priority;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.control.Labeled;
+import javafx.scene.paint.Paint;
+import javafx.scene.paint.Color;
 
 /**
- * This project is a random anime fact generator that can be later used to translate that fact into
- * one of the displayed languages.
+ * This project is a random anime quote generator that can be later used to translate that quote
+ * into one of the displayed languages.
  * On the first scene of the project several quotes are displayed with a button next to each quote.
  * The user chooses whichever quote interests them and clicks the corresponding button.
  * This takes them to a new scene where the quote, its anime and the character who said it are
@@ -78,15 +81,15 @@ public class ApiApp extends Application {
     public ApiApp() {
         root1 = new VBox(5);
         scene1TopRow = new HBox(5);
-        instructions1 = new Label("Click generate to generate random anime quotes and" +
-            " click the button next to one you like");
+        instructions1 = new Label("Click generate to generate random anime quotes. Once" +
+            " you get a quote you like click the button next to it to choose it");
         quoteBar1 = new HBox();
         quoteBar2 = new HBox();
         quoteBar3 = new HBox();
         quoteBar4 = new HBox();
         quoteBar5 = new HBox();
         quoteBar6 = new HBox();
-        title = new Label("Anime Quote Generator");
+        title = new Label("ANIME QUOTE GENERATOR & TRANSLATOR");
         quoteGenerator = new Button("Generate");
         quote1 = new Label("Waiting for quotes...");
         quote2 = new Label("Waiting for quotes...");
@@ -105,6 +108,7 @@ public class ApiApp extends Application {
     /**{@inheritDoc} */
     @Override
     public void init() {
+        // creates the appearance of the initial scene
         root1.getChildren().addAll(scene1TopRow, instructions1, quoteBar1, quoteBar2, quoteBar3,
             quoteBar4, quoteBar5, quoteBar6);
         scene1TopRow.getChildren().addAll(title, quoteGenerator);
@@ -115,9 +119,8 @@ public class ApiApp extends Application {
         quoteBar5.getChildren().addAll(quote5, button5);
         quoteBar6.getChildren().addAll(quote6, button6);
         title.setMaxWidth(Double.MAX_VALUE);
-        title.setTextAlignment(TextAlignment.CENTER);
         instructions1.setTextAlignment(TextAlignment.CENTER);
-        instructions1.setMaxWidth(400);
+        instructions1.setMaxWidth(500);
         instructions1.setWrapText(true);
         quoteBar1.setPrefHeight(60);
         quoteBar2.setPrefHeight(60);
@@ -138,12 +141,19 @@ public class ApiApp extends Application {
         HBox.setHgrow(quote4, Priority.ALWAYS);
         HBox.setHgrow(quote5, Priority.ALWAYS);
         HBox.setHgrow(quote6, Priority.ALWAYS);
-        quote1.setMaxWidth(Double.MAX_VALUE);
-        quote2.setMaxWidth(Double.MAX_VALUE);
-        quote3.setMaxWidth(Double.MAX_VALUE);
-        quote4.setMaxWidth(Double.MAX_VALUE);
-        quote5.setMaxWidth(Double.MAX_VALUE);
-        quote6.setMaxWidth(Double.MAX_VALUE);
+        quote1.setMaxWidth(360);
+        quote1.setWrapText(true);
+        quote2.setMaxWidth(360);
+        quote2.setWrapText(true);
+        quote3.setMaxWidth(360);
+        quote3.setWrapText(true);
+        quote4.setMaxWidth(360);
+        quote4.setWrapText(true);
+        quote5.setMaxWidth(360);
+        quote5.setWrapText(true);
+        quote6.setMaxWidth(360);
+        quote6.setWrapText(true);
+        setAesthetics();
     } // init
 
     /** {@inheritDoc} */
@@ -155,11 +165,25 @@ public class ApiApp extends Application {
         stage.setTitle("ApiApp!");
         stage.setScene(scene1);
         stage.setOnCloseRequest(event -> Platform.exit());
-        //stage.sizeToScene();
-        stage.setWidth(400);
+        stage.setWidth(500);
         stage.setHeight(500);
         stage.show();
         stage.setResizable(false);
     } // start
 
+
+    public void setAesthetics() {
+        quote1.setTextFill(Color.color(1,0,0));
+        button1.setStyle("-fx-background-color: #ff0000");
+        quote2.setTextFill(Color.color(1,.5,0));
+        button2.setStyle("-fx-background-color: #fff000");
+        quote3.setTextFill(Color.color(0,1,0));
+        button3.setStyle("-fx-background-color: #00ff00");
+        quote4.setTextFill(Color.color(0,1,1));
+        button4.setStyle("-fx-background-color: #00ffff");
+        quote5.setTextFill(Color.color(0,0,1));
+        button5.setStyle("-fx-background-color: #0000ff");
+        quote6.setTextFill(Color.color(1,0,1));
+        button6.setStyle("-fx-background-color: #ff00ff");
+    }
 } // ApiApp
