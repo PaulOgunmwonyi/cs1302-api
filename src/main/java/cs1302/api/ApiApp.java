@@ -144,12 +144,12 @@ public class ApiApp extends Application {
         instructions1.setTextAlignment(TextAlignment.CENTER);
         instructions1.setMaxWidth(600);
         instructions1.setWrapText(true);
-        quoteBar1.setPrefHeight(60);
-        quoteBar2.setPrefHeight(60);
-        quoteBar3.setPrefHeight(60);
-        quoteBar4.setPrefHeight(60);
-        quoteBar5.setPrefHeight(60);
-        quoteBar6.setPrefHeight(60);
+        quoteBar1.setPrefHeight(77);
+        quoteBar2.setPrefHeight(77);
+        quoteBar3.setPrefHeight(77);
+        quoteBar4.setPrefHeight(77);
+        quoteBar5.setPrefHeight(77);
+        quoteBar6.setPrefHeight(77);
         button1.setDisable(true);
         button2.setDisable(true);
         button3.setDisable(true);
@@ -163,17 +163,17 @@ public class ApiApp extends Application {
         HBox.setHgrow(quote4, Priority.ALWAYS);
         HBox.setHgrow(quote5, Priority.ALWAYS);
         HBox.setHgrow(quote6, Priority.ALWAYS);
-        quote1.setMaxWidth(460);
+        quote1.setMaxWidth(560);
         quote1.setWrapText(true);
-        quote2.setMaxWidth(460);
+        quote2.setMaxWidth(560);
         quote2.setWrapText(true);
-        quote3.setMaxWidth(460);
+        quote3.setMaxWidth(560);
         quote3.setWrapText(true);
-        quote4.setMaxWidth(460);
+        quote4.setMaxWidth(560);
         quote4.setWrapText(true);
-        quote5.setMaxWidth(460);
+        quote5.setMaxWidth(560);
         quote5.setWrapText(true);
-        quote6.setMaxWidth(460);
+        quote6.setMaxWidth(560);
         quote6.setWrapText(true);
         setAesthetics();
     } // init
@@ -187,8 +187,8 @@ public class ApiApp extends Application {
         stage.setTitle("ApiApp!");
         stage.setScene(scene1);
         stage.setOnCloseRequest(event -> Platform.exit());
-        stage.setWidth(600);
-        stage.setHeight(500);
+        stage.setWidth(700);
+        stage.setHeight(600);
         stage.show();
         stage.setResizable(false);
 
@@ -246,7 +246,12 @@ public class ApiApp extends Application {
                     quotes[count] = theQuote.quote;
                     count++;
                 }
-                quote1.setText(quotes[0]);
+                Platform.runLater(() -> quote1.setText(quotes[0]));
+                Platform.runLater(() -> quote2.setText(quotes[1]));
+                Platform.runLater(() -> quote3.setText(quotes[2]));
+                Platform.runLater(() -> quote4.setText(quotes[3]));
+                Platform.runLater(() -> quote5.setText(quotes[4]));
+                Platform.runLater(() -> quote6.setText(quotes[5]));
             } catch (IOException | IllegalArgumentException | InterruptedException e) {
                 System.err.println(e);
             }
