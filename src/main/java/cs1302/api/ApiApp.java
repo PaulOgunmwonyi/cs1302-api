@@ -37,11 +37,11 @@ import javafx.scene.control.ComboBox;
 /**
  * This project is a random quote generator that can be later used to translate that quote
  * into one of the displayed languages.
- * On the first scene of the project the user can choose a category and then click generate
+ * On the first screen of the project the user can choose a category and then click generate
  * which well then cause several quotes from that category to be displayed with a button
  * next to each quote.
  * The user chooses whichever quote interests them and clicks the corresponding button.
- * This takes them to a new scene where the quote, its category and the person who said it are
+ * This takes them to a new scene root where the quote, its category and the person who said it are
  * are displayed.
  * Below this are several buttons with languages the user can turn the quote into.
  * After they click the language the quote is displayed below.
@@ -61,7 +61,6 @@ public class ApiApp extends Application {
 
     private Stage stage;
     private Scene scene1;
-    private Scene scene2;
     private VBox root1;
     private VBox root2;
 
@@ -90,12 +89,38 @@ public class ApiApp extends Application {
     private Button button5;
     private Button button6;
 
+    private HBox scene2TopRow;
+    private Label instructions2;
+    private Label author;
+    private Label category;
+    private Label originalQuote;
+    private HBox buttonRow;
+    private Label translatedQuote;
+
+    private Label title2;
+    private Button backButton;
+    private Button englishButton;
+    private Button spanishButton;
+    private Button frenchButton;
+    private Button germanButton;
+
+    private String[] people = new String[6];
     private String[] quotes = new String[6];
+
+    EventHandler<ActionEvent> loadQuotes;
+    EventHandler<ActionEvent> loadSecondScene1;
+    EventHandler<ActionEvent> loadSecondScene2;
+    EventHandler<ActionEvent> loadSecondScene3;
+    EventHandler<ActionEvent> loadSecondScene4;
+    EventHandler<ActionEvent> loadSecondScene5;
+    EventHandler<ActionEvent> loadSecondScene6;
+    EventHandler<ActionEvent> goBack;
 
     /**
      * Constructs an {@code ApiApp} object.
      */
     public ApiApp() {
+        // constructs the first root
         root1 = new VBox(5);
         scene1TopRow = new HBox(5);
         instructions1 = new Label("Select your preferred category from the drop down and then" +
@@ -122,12 +147,63 @@ public class ApiApp extends Application {
         button4 = new Button("Choose this quote");
         button5 = new Button("Choose this quote");
         button6 = new Button("Choose this quote");
+        // constructs the second root
+        root2 = new VBox(5);
+        scene2TopRow = new HBox(5);
+        title2 = new Label("RANDOM QUOTE GENERATOR & TRANSLATOR");
+        backButton = new Button("Go back to previous");
+        instructions2 = new Label("Below is the chosen quote's info. Choose a language flag to" +
+            " translate your quote into that language. Once you are satisfied you can click the" +
+            " go back button at the top.");
+        author = new Label();
+        category = new Label();
+        originalQuote = new Label();
+        buttonRow = new HBox();
+        englishButton = new Button();
+        spanishButton = new Button();
+        frenchButton = new Button();
+        germanButton = new Button();
+        translatedQuote = new Label("Translated quote will appear here");
     } // ApiApp
 
     /**{@inheritDoc} */
     @Override
     public void init() {
         // creates the appearance of the initial scene
+        createFirstScene();
+        setAesthetics();
+        // creates the appearance of the second scene
+        createSecondScene();
+    } // init
+
+    /** {@inheritDoc} */
+    @Override
+    public void start(Stage stage) {
+        // setup stage
+        this.stage = stage;
+        scene1 = new Scene(root1);
+        stage.setTitle("ApiApp!");
+        stage.setScene(scene1);
+        stage.setOnCloseRequest(event -> Platform.exit());
+        stage.setWidth(700);
+        stage.setHeight(600);
+        stage.show();
+        stage.setResizable(false);
+
+        // creates and sets all of the handlers to their appropriate buttons
+        createHandlers();
+        quoteGenerator.setOnAction(loadQuotes);
+        button1.setOnAction(loadSecondScene1);
+        button2.setOnAction(loadSecondScene2);
+        button3.setOnAction(loadSecondScene3);
+        button4.setOnAction(loadSecondScene4);
+        button5.setOnAction(loadSecondScene5);
+        button6.setOnAction(loadSecondScene6);
+        backButton.setOnAction(goBack);
+
+    } // start
+
+    private void createFirstScene() {
         root1.getChildren().addAll(scene1TopRow, instructions1, quoteBar1, quoteBar2, quoteBar3,
             quoteBar4, quoteBar5, quoteBar6);
         scene1TopRow.getChildren().addAll(title, dropDown, quoteGenerator);
@@ -175,37 +251,23 @@ public class ApiApp extends Application {
         quote5.setWrapText(true);
         quote6.setMaxWidth(560);
         quote6.setWrapText(true);
-        setAesthetics();
-    } // init
+    } // createFirstScene
 
-    /** {@inheritDoc} */
-    @Override
-    public void start(Stage stage) {
-        // setup stage
-        this.stage = stage;
-        scene1 = new Scene(root1);
-        stage.setTitle("ApiApp!");
-        stage.setScene(scene1);
-        stage.setOnCloseRequest(event -> Platform.exit());
-        stage.setWidth(700);
-        stage.setHeight(600);
-        stage.show();
-        stage.setResizable(false);
-
-        // EventHandler for getting the quotes
-        EventHandler<ActionEvent> loadQuotes = (e) -> {
-            getQuotes();
-            button1.setDisable(false);
-            button2.setDisable(false);
-            button3.setDisable(false);
-            button4.setDisable(false);
-            button5.setDisable(false);
-            button6.setDisable(false);
-        };
-        quoteGenerator.setOnAction(loadQuotes);
-
-    } // start
-
+    private void createSecondScene() {
+        root2.getChildren().addAll(scene2TopRow, instructions2, author, category, originalQuote,
+            buttonRow, translatedQuote);
+        scene2TopRow.getChildren().addAll(title2, backButton);
+        buttonRow.getChildren().addAll(englishButton, spanishButton, frenchButton, germanButton);
+        title2.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(title2, Priority.ALWAYS);
+        instructions2.setTextAlignment(TextAlignment.CENTER);
+        instructions2.setMaxWidth(600);
+        instructions2.setWrapText(true);
+        originalQuote.setMaxWidth(600);
+        originalQuote.setWrapText(true);
+        translatedQuote.setMaxWidth(600);
+        translatedQuote.setWrapText(true);
+    } // createSecondScene
 
     private void setAesthetics() {
         quote1.setTextFill(Color.color(1,0,0));
@@ -220,7 +282,48 @@ public class ApiApp extends Application {
         button5.setStyle("-fx-background-color: #0000ff");
         quote6.setTextFill(Color.color(1,0,1));
         button6.setStyle("-fx-background-color: #ff00ff");
-    }
+    } // setAesthetics
+
+    private void createHandlers() {
+        // EventHandler for getting the quotes
+        loadQuotes = (e) -> {
+            getQuotes();
+            button1.setDisable(false);
+            button2.setDisable(false);
+            button3.setDisable(false);
+            button4.setDisable(false);
+            button5.setDisable(false);
+            button6.setDisable(false);
+        };
+        // EventHandlers for loading the second screen
+        loadSecondScene1  = (e) -> {
+            updateQuoteDisplay(0);
+            scene1.setRoot(root2);
+        };
+        loadSecondScene2  = (e) -> {
+            updateQuoteDisplay(1);
+            scene1.setRoot(root2);
+        };
+        loadSecondScene3  = (e) -> {
+            updateQuoteDisplay(2);
+            scene1.setRoot(root2);
+        };
+        loadSecondScene4  = (e) -> {
+            updateQuoteDisplay(3);
+            scene1.setRoot(root2);
+        };
+        loadSecondScene5  = (e) -> {
+            updateQuoteDisplay(4);
+            scene1.setRoot(root2);
+        };
+        loadSecondScene6  = (e) -> {
+            updateQuoteDisplay(5);
+            scene1.setRoot(root2);
+        };
+        // EventHandler for going back to the first scene
+        goBack = ((e) -> scene1.setRoot(root1));
+
+    } // createHandlers
 
     private void getQuotes() {
         // Creates the url to be sent
@@ -244,6 +347,7 @@ public class ApiApp extends Application {
                 int count = 0;
                 for (QuoteResult theQuote : quoteArray) {
                     quotes[count] = theQuote.quote;
+                    people[count] = theQuote.author;
                     count++;
                 }
                 Platform.runLater(() -> quote1.setText(quotes[0]));
@@ -261,5 +365,11 @@ public class ApiApp extends Application {
         t.setDaemon(true);
         t.start();
     } // getQuotes
+
+    private void updateQuoteDisplay(int num) {
+        author.setText(people[num]);
+        category.setText(dropDown.getValue());
+        originalQuote.setText(quotes[num]);
+    } // updateQuoteDisplay
 
 } // ApiApp
