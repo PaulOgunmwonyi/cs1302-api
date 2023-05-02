@@ -240,13 +240,13 @@ public class ApiApp extends Application {
                 HttpResponse<String> response = HTTP_CLIENT
                     .send(request, BodyHandlers.ofString());
                 String jsonString = response.body().toString();
-                System.out.println(jsonString);
-                QuoteResponse quoteResponse = GSON
-                    .fromJson(jsonString, QuoteResponse.class);
-                System.out.println(quoteResponse);
-                for (int i = 0; i < 6; i++) {
-                    System.out.println(quotes[i]);
+                QuoteResult[] quoteArray = GSON.fromJson(jsonString, QuoteResult[].class);
+                int count = 0;
+                for (QuoteResult theQuote : quoteArray) {
+                    quotes[count] = theQuote.quote;
+                    count++;
                 }
+                quote1.setText(quotes[0]);
             } catch (IOException | IllegalArgumentException | InterruptedException e) {
                 System.err.println(e);
             }
@@ -255,11 +255,6 @@ public class ApiApp extends Application {
         Thread t = new Thread(task);
         t.setDaemon(true);
         t.start();
-    }
+    } // getQuotes
 
-    private void storeQuotes(QuoteResponse theResponse) {
-        for (int i = 0; i < 6; i++) {
-            quotes[i]  = theResponse.results[i].quote;
-      }
-    }
 } // ApiApp
