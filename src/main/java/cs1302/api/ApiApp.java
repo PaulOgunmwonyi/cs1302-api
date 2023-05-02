@@ -37,8 +37,9 @@ import javafx.scene.control.ComboBox;
 /**
  * This project is a random quote generator that can be later used to translate that quote
  * into one of the displayed languages.
- * On the first scene of the project the user can choose a category and then several quotes
- * from that category are displayed with a button next to each quote.
+ * On the first scene of the project the user can choose a category and then click generate
+ * which well then cause several quotes from that category to be displayed with a button
+ * next to each quote.
  * The user chooses whichever quote interests them and clicks the corresponding button.
  * This takes them to a new scene where the quote, its category and the person who said it are
  * are displayed.
@@ -47,6 +48,17 @@ import javafx.scene.control.ComboBox;
  * The user can use a button at the top of this scene to go back to the original scene.
  */
 public class ApiApp extends Application {
+    /** The HTTP client. */
+    public static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
+        .version(HttpClient.Version.HTTP_2)
+        .followRedirects(HttpClient.Redirect.NORMAL)
+        .build();
+
+    /** Google {@code Gson} object for parsing JSOn-formatted strings. */
+    public static Gson GSON = new GsonBuilder()
+        .setPrettyPrinting()
+        .create();
+
     private Stage stage;
     private Scene scene1;
     private Scene scene2;
@@ -77,6 +89,8 @@ public class ApiApp extends Application {
     private Button button4;
     private Button button5;
     private Button button6;
+
+    private String[] quotes = new String[6];
 
     /**
      * Constructs an {@code ApiApp} object.
@@ -177,10 +191,23 @@ public class ApiApp extends Application {
         stage.setHeight(500);
         stage.show();
         stage.setResizable(false);
+
+        // EventHandler for getting the quotes
+        EventHandler<ActionEvent> loadQuotes = (e) -> {
+            getQuotes();
+            button1.setDisable(false);
+            button2.setDisable(false);
+            button3.setDisable(false);
+            button4.setDisable(false);
+            button5.setDisable(false);
+            button6.setDisable(false);
+        };
+        quoteGenerator.setOnAction(loadQuotes);
+
     } // start
 
 
-    public void setAesthetics() {
+    private void setAesthetics() {
         quote1.setTextFill(Color.color(1,0,0));
         button1.setStyle("-fx-background-color: #ff0000");
         quote2.setTextFill(Color.color(1,.5,0));
@@ -193,5 +220,46 @@ public class ApiApp extends Application {
         button5.setStyle("-fx-background-color: #0000ff");
         quote6.setTextFill(Color.color(1,0,1));
         button6.setStyle("-fx-background-color: #ff00ff");
+    }
+
+    private void getQuotes() {
+        // Creates the url to be sent
+        String category = URLEncoder.encode(dropDown.getValue(), StandardCharsets.UTF_8);
+        String limit = URLEncoder.encode("6", StandardCharsets.UTF_8);
+        String urlStr =
+            String.format("https://api.api-ninjas.com/v1/quotes?category=%s&limit=%s",
+            category, limit);
+        // The main Runnable
+        Runnable task = () -> {
+            try {
+                // Creates and sends the request then recieves the response
+                HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(urlStr))
+                    .header("X-Api-Key" ,"znBjJAWWz/khdtaf2dPDrw==DzYrOkIE6Uu7heiF")
+                    .build();
+                HttpResponse<String> response = HTTP_CLIENT
+                    .send(request, BodyHandlers.ofString());
+                String jsonString = response.body().toString();
+                System.out.println(jsonString);
+                QuoteResponse quoteResponse = GSON
+                    .fromJson(jsonString, QuoteResponse.class);
+                System.out.println(quoteResponse);
+                for (int i = 0; i < 6; i++) {
+                    System.out.println(quotes[i]);
+                }
+            } catch (IOException | IllegalArgumentException | InterruptedException e) {
+                System.err.println(e);
+            }
+        };
+        // Creates a new thread
+        Thread t = new Thread(task);
+        t.setDaemon(true);
+        t.start();
+    }
+
+    private void storeQuotes(QuoteResponse theResponse) {
+        for (int i = 0; i < 6; i++) {
+            quotes[i]  = theResponse.results[i].quote;
+      }
     }
 } // ApiApp
