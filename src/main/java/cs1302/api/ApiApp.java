@@ -114,6 +114,10 @@ public class ApiApp extends Application {
     EventHandler<ActionEvent> loadSecondScene4;
     EventHandler<ActionEvent> loadSecondScene5;
     EventHandler<ActionEvent> loadSecondScene6;
+    EventHandler<ActionEvent> usEvent;
+    EventHandler<ActionEvent> spEvent;
+    EventHandler<ActionEvent> frEvent;
+    EventHandler<ActionEvent> deEvent;
     EventHandler<ActionEvent> goBack;
 
     private static final String US_FLAG = "resources/Flag_of_the_United_States.png";
@@ -215,6 +219,7 @@ public class ApiApp extends Application {
         button5.setOnAction(loadSecondScene5);
         button6.setOnAction(loadSecondScene6);
         backButton.setOnAction(goBack);
+        //createLanguageHandlers();
 
     } // start
 
@@ -360,13 +365,31 @@ public class ApiApp extends Application {
 
     } // createHandlers
 
+    /**
+    private void createLanguageHandlers() {
+        usEvent = (e) -> {
+            translatedQuote.setText("Translated quote: " + OriginalQuote.getText());
+        };
+        spEvent = (e) -> {
+            getTranslated("sp");
+        };
+        frEvent = (e) -> {
+            getTranslated("fr");
+        };
+        deEvent = (e) -> {
+            getTranslated("de");
+        };
+    }
+    */
+
     private void getQuotes() {
         // Creates the url to be sent
-        String category = URLEncoder.encode(dropDown.getValue(), StandardCharsets.UTF_8);
-        String limit = URLEncoder.encode("6", StandardCharsets.UTF_8);
+        String genre = URLEncoder.encode(dropDown.getValue(), StandardCharsets.UTF_8);
+        //String limit = URLEncoder.encode("6", StandardCharsets.UTF_8);
+        //String query = URLEncoder.encode("Random quotes", StandardCharsets.UTF_8);
         String urlStr =
-            String.format("https://api.api-ninjas.com/v1/quotes?category=%s&limit=%s",
-            category, limit);
+            String.format("https://quote-garden.onrender.com/api/v3/quotes?genre=%s"
+            , genre);
         // The main Runnable
         Runnable task = () -> {
             try {
@@ -378,12 +401,13 @@ public class ApiApp extends Application {
                 HttpResponse<String> response = HTTP_CLIENT
                     .send(request, BodyHandlers.ofString());
                 String jsonString = response.body().toString();
-                QuoteResult[] quoteArray = GSON.fromJson(jsonString, QuoteResult[].class);
-                int count = 0;
-                for (QuoteResult theQuote : quoteArray) {
-                    quotes[count] = theQuote.quote;
-                    people[count] = theQuote.author;
-                    count++;
+                System.out.println(jsonString);
+                QuoteResponse theResponse = GSON.fromJson(jsonString, QuoteResponse.class);
+                int range = ((theResponse.totalQuotes - 1) - 0) + 1;
+                for (int i = 0; i < 6; i++) {
+                    int current = (int)(Math.random() * range);
+                    quotes[i] = theResponse.data[current].quoteText;
+                    people[i] = theResponse.data[current].quoteAuthor;
                 }
                 Platform.runLater(() -> quote1.setText(quotes[0]));
                 Platform.runLater(() -> quote2.setText(quotes[1]));
