@@ -116,15 +116,20 @@ public class ApiApp extends Application {
     EventHandler<ActionEvent> loadSecondScene6;
     EventHandler<ActionEvent> goBack;
 
-    private static final String US_FLAG =;
-    private static final String SP_FLAG =;
-    private static final String FR_FLAG =;
-    private static final String DE_FLAG =;
+    private static final String US_FLAG = "resources/Flag_of_the_United_States.png";
+    private static final String SP_FLAG = "resources/Spain_flag.png";
+    private static final String FR_FLAG = "resources/Flag_of_France.png";
+    private static final String DE_FLAG = "resources/Germany_flag.png";
 
     Image usFlag = new Image("file:" + US_FLAG);
     Image spFlag = new Image("file:" + SP_FLAG);
     Image frFlag = new Image("file:" + FR_FLAG);
     Image deFlag = new Image("file:" + DE_FLAG);
+
+    ImageView usImgView = new ImageView(usFlag);
+    ImageView spImgView = new ImageView(spFlag);
+    ImageView frImgView = new ImageView(frFlag);
+    ImageView deImgView = new ImageView(deFlag);
 
     /**
      * Constructs an {@code ApiApp} object.
@@ -214,6 +219,7 @@ public class ApiApp extends Application {
     } // start
 
     private void createFirstScene() {
+        root1.setStyle("-fx-background-color: FFEFE0");
         root1.getChildren().addAll(scene1TopRow, instructions1, quoteBar1, quoteBar2, quoteBar3,
             quoteBar4, quoteBar5, quoteBar6);
         scene1TopRow.getChildren().addAll(title, dropDown, quoteGenerator);
@@ -264,6 +270,7 @@ public class ApiApp extends Application {
     } // createFirstScene
 
     private void createSecondScene() {
+        root2.setStyle("-fx-background-color: FFEFE0");
         root2.getChildren().addAll(scene2TopRow, instructions2, author, category, originalQuote,
             buttonRow, translatedQuote);
         scene2TopRow.getChildren().addAll(title2, backButton);
@@ -276,6 +283,18 @@ public class ApiApp extends Application {
         originalQuote.setMaxWidth(600);
         originalQuote.setWrapText(true);
         originalQuote.setPrefHeight(80);
+        usImgView.setFitWidth(177);
+        usImgView.setPreserveRatio(true);
+        spImgView.setFitWidth(142);
+        spImgView.setPreserveRatio(true);
+        frImgView.setFitWidth(142);
+        frImgView.setPreserveRatio(true);
+        deImgView.setFitWidth(162);
+        deImgView.setPreserveRatio(true);
+        englishButton.setGraphic(usImgView);
+        spanishButton.setGraphic(spImgView);
+        frenchButton.setGraphic(frImgView);
+        germanButton.setGraphic(deImgView);
         englishButton.setMaxWidth(Double.MAX_VALUE);
         spanishButton.setMaxWidth(Double.MAX_VALUE);
         frenchButton.setMaxWidth(Double.MAX_VALUE);
@@ -289,7 +308,7 @@ public class ApiApp extends Application {
         quote1.setTextFill(Color.color(1,0,0));
         button1.setStyle("-fx-background-color: #ff0000");
         quote2.setTextFill(Color.color(1,.5,0));
-        button2.setStyle("-fx-background-color: #fff000");
+        button2.setStyle("-fx-background-color: #ff8000");
         quote3.setTextFill(Color.color(0,1,0));
         button3.setStyle("-fx-background-color: #00ff00");
         quote4.setTextFill(Color.color(0,1,1));
