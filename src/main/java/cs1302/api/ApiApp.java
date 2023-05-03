@@ -116,6 +116,16 @@ public class ApiApp extends Application {
     EventHandler<ActionEvent> loadSecondScene6;
     EventHandler<ActionEvent> goBack;
 
+    private static final String US_FLAG =;
+    private static final String SP_FLAG =;
+    private static final String FR_FLAG =;
+    private static final String DE_FLAG =;
+
+    Image usFlag = new Image("file:" + US_FLAG);
+    Image spFlag = new Image("file:" + SP_FLAG);
+    Image frFlag = new Image("file:" + FR_FLAG);
+    Image deFlag = new Image("file:" + DE_FLAG);
+
     /**
      * Constructs an {@code ApiApp} object.
      */
