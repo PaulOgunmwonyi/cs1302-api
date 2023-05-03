@@ -265,8 +265,14 @@ public class ApiApp extends Application {
         instructions2.setWrapText(true);
         originalQuote.setMaxWidth(600);
         originalQuote.setWrapText(true);
+        originalQuote.setPrefHeight(80);
+        englishButton.setMaxWidth(Double.MAX_VALUE);
+        spanishButton.setMaxWidth(Double.MAX_VALUE);
+        frenchButton.setMaxWidth(Double.MAX_VALUE);
+        germanButton.setMaxWidth(Double.MAX_VALUE);
         translatedQuote.setMaxWidth(600);
         translatedQuote.setWrapText(true);
+        translatedQuote.setPrefHeight(80);
     } // createSecondScene
 
     private void setAesthetics() {
@@ -367,9 +373,9 @@ public class ApiApp extends Application {
     } // getQuotes
 
     private void updateQuoteDisplay(int num) {
-        author.setText(people[num]);
-        category.setText(dropDown.getValue());
-        originalQuote.setText(quotes[num]);
+        author.setText("Author of quote: " + people[num]);
+        category.setText("Category of quote: " + dropDown.getValue());
+        originalQuote.setText("Original quote: " + quotes[num]);
     } // updateQuoteDisplay
 
 } // ApiApp
