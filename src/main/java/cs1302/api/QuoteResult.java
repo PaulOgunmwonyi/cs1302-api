@@ -5,7 +5,6 @@ package cs1302.api;
  * to create an object from the JSON response body.
  */
 public class QuoteResult {
-    String quoteText;
-    String quoteAuthor;
-    String quoteGenre;
+    String quote;
+    String author;
 } // QuoteResult

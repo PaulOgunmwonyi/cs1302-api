@@ -35,10 +35,10 @@ import javafx.scene.paint.Color;
 import javafx.scene.control.ComboBox;
 
 /**
- * This project is a random quote generator that can be later used to translate that quote
- * into one of the displayed languages.
- * On the first screen of the project the user can choose a category and then click generate
- * which well then cause several quotes from that category to be displayed with a button
+ * This project is a random Stranger Things quote generator that can be later used to translate
+ * that quote into one of the displayed languages.
+ * On the first screen of the project the user can click generate
+ * which will then cause several quotes from that category to be displayed with a button
  * next to each quote.
  * The user chooses whichever quote interests them and clicks the corresponding button.
  * This takes them to a new scene root where the quote, its category and the person who said it are
@@ -74,7 +74,6 @@ public class ApiApp extends Application {
     private HBox quoteBar6;
 
     private Label title;
-    private ComboBox<String> dropDown;
     private Button quoteGenerator;
     private Label quote1;
     private Label quote2;
@@ -92,7 +91,6 @@ public class ApiApp extends Application {
     private HBox scene2TopRow;
     private Label instructions2;
     private Label author;
-    private Label category;
     private Label originalQuote;
     private HBox buttonRow;
     private Label translatedQuote;
@@ -142,17 +140,15 @@ public class ApiApp extends Application {
         // constructs the first root
         root1 = new VBox(5);
         scene1TopRow = new HBox(5);
-        instructions1 = new Label("Select your preferred category from the drop down and then" +
-            " click generate to generate random quotes. Once you get a quote you like click the" +
-            " button next to it to choose it");
+        instructions1 = new Label("Click generate to generate random Stranger Things quotes. Once" +
+        " you get a quote you like click the button next to it to choose it");
         quoteBar1 = new HBox();
         quoteBar2 = new HBox();
         quoteBar3 = new HBox();
         quoteBar4 = new HBox();
         quoteBar5 = new HBox();
         quoteBar6 = new HBox();
-        title = new Label("RANDOM QUOTE GENERATOR & TRANSLATOR");
-        dropDown = new ComboBox<String>();
+        title = new Label("STRANGER THINGS QUOTE GENERATOR & TRANSLATOR");
         quoteGenerator = new Button("Generate");
         quote1 = new Label("Waiting for quotes...");
         quote2 = new Label("Waiting for quotes...");
@@ -169,13 +165,12 @@ public class ApiApp extends Application {
         // constructs the second root
         root2 = new VBox(5);
         scene2TopRow = new HBox(5);
-        title2 = new Label("RANDOM QUOTE GENERATOR & TRANSLATOR");
+        title2 = new Label("STRANGER THINGS QUOTE GENERATOR & TRANSLATOR");
         backButton = new Button("Go back to previous");
         instructions2 = new Label("Below is the chosen quote's info. Choose a language flag to" +
             " translate your quote into that language. Once you are satisfied you can click the" +
             " go back button at the top.");
         author = new Label();
-        category = new Label();
         originalQuote = new Label();
         buttonRow = new HBox();
         englishButton = new Button();
@@ -219,7 +214,8 @@ public class ApiApp extends Application {
         button5.setOnAction(loadSecondScene5);
         button6.setOnAction(loadSecondScene6);
         backButton.setOnAction(goBack);
-        //createLanguageHandlers();
+        createLanguageHandlers();
+        englishButton.setOnAction(usEvent);
 
     } // start
 
@@ -227,7 +223,7 @@ public class ApiApp extends Application {
         root1.setStyle("-fx-background-color: FFEFE0");
         root1.getChildren().addAll(scene1TopRow, instructions1, quoteBar1, quoteBar2, quoteBar3,
             quoteBar4, quoteBar5, quoteBar6);
-        scene1TopRow.getChildren().addAll(title, dropDown, quoteGenerator);
+        scene1TopRow.getChildren().addAll(title, quoteGenerator);
         quoteBar1.getChildren().addAll(quote1, button1);
         quoteBar2.getChildren().addAll(quote2, button2);
         quoteBar3.getChildren().addAll(quote3, button3);
@@ -235,9 +231,6 @@ public class ApiApp extends Application {
         quoteBar5.getChildren().addAll(quote5, button5);
         quoteBar6.getChildren().addAll(quote6, button6);
         title.setMaxWidth(Double.MAX_VALUE);
-        dropDown.getItems().addAll("age", "anger", "beauty", "courage", "fitness", "funny",
-            "happiness", "humor", "inspirational", "love", "money");
-        dropDown.getSelectionModel().select(0);
         instructions1.setTextAlignment(TextAlignment.CENTER);
         instructions1.setMaxWidth(600);
         instructions1.setWrapText(true);
@@ -276,7 +269,7 @@ public class ApiApp extends Application {
 
     private void createSecondScene() {
         root2.setStyle("-fx-background-color: FFEFE0");
-        root2.getChildren().addAll(scene2TopRow, instructions2, author, category, originalQuote,
+        root2.getChildren().addAll(scene2TopRow, instructions2, author,  originalQuote,
             buttonRow, translatedQuote);
         scene2TopRow.getChildren().addAll(title2, backButton);
         buttonRow.getChildren().addAll(englishButton, spanishButton, frenchButton, germanButton);
@@ -365,49 +358,43 @@ public class ApiApp extends Application {
 
     } // createHandlers
 
-    /**
+
     private void createLanguageHandlers() {
         usEvent = (e) -> {
-            translatedQuote.setText("Translated quote: " + OriginalQuote.getText());
+            translatedQuote.setText("Translated quote: " + originalQuote.getText().substring(16));
         };
-        spEvent = (e) -> {
-            getTranslated("sp");
-        };
-        frEvent = (e) -> {
-            getTranslated("fr");
-        };
-        deEvent = (e) -> {
-            getTranslated("de");
-        };
+        //spEvent = (e) -> {
+        //  getTranslated("sp");
+        //};
+        //frEvent = (e) -> {
+        //  getTranslated("fr");
+        //};
+        //deEvent = (e) -> {
+        //  getTranslated("de");
+        //};
     }
-    */
 
     private void getQuotes() {
-        // Creates the url to be sent
-        String genre = URLEncoder.encode(dropDown.getValue(), StandardCharsets.UTF_8);
-        //String limit = URLEncoder.encode("6", StandardCharsets.UTF_8);
-        //String query = URLEncoder.encode("Random quotes", StandardCharsets.UTF_8);
+        String limit = URLEncoder.encode("6", StandardCharsets.UTF_8);
         String urlStr =
-            String.format("https://quote-garden.onrender.com/api/v3/quotes?genre=%s"
-            , genre);
+            String.format("https://strangerthings-quotes.vercel.app/api/quotes/%s"
+            , limit);
         // The main Runnable
         Runnable task = () -> {
             try {
                 // Creates and sends the request then recieves the response
                 HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(urlStr))
-                    .header("X-Api-Key" ,"znBjJAWWz/khdtaf2dPDrw==DzYrOkIE6Uu7heiF")
                     .build();
                 HttpResponse<String> response = HTTP_CLIENT
                     .send(request, BodyHandlers.ofString());
                 String jsonString = response.body().toString();
-                System.out.println(jsonString);
-                QuoteResponse theResponse = GSON.fromJson(jsonString, QuoteResponse.class);
-                int range = ((theResponse.totalQuotes - 1) - 0) + 1;
-                for (int i = 0; i < 6; i++) {
-                    int current = (int)(Math.random() * range);
-                    quotes[i] = theResponse.data[current].quoteText;
-                    people[i] = theResponse.data[current].quoteAuthor;
+                QuoteResult[] resultArray = GSON.fromJson(jsonString, QuoteResult[].class);
+                int count = 0;
+                for (QuoteResult theResult : resultArray) {
+                    quotes[count] = theResult.quote;
+                    people[count] = theResult.author;
+                    count++;
                 }
                 Platform.runLater(() -> quote1.setText(quotes[0]));
                 Platform.runLater(() -> quote2.setText(quotes[1]));
@@ -427,8 +414,8 @@ public class ApiApp extends Application {
 
     private void updateQuoteDisplay(int num) {
         author.setText("Author of quote: " + people[num]);
-        category.setText("Category of quote: " + dropDown.getValue());
         originalQuote.setText("Original quote: " + quotes[num]);
+        translatedQuote.setText("Translated quote: ");
     } // updateQuoteDisplay
 
 } // ApiApp
