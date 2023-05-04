@@ -33,19 +33,19 @@ import javafx.scene.control.Labeled;
 import javafx.scene.paint.Paint;
 import javafx.scene.paint.Color;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
 /**
- * This project is a random Stranger Things quote generator that can be later used to translate
- * that quote into one of the displayed languages.
- * On the first screen of the project the user can click generate
- * which will then cause several quotes from that category to be displayed with a button
- * next to each quote.
+ * This project is a random Stranger Things quote generator that can later be used to see info
+ * about the character who said the chosen quote.
+ * On the first screen of the project the user can click generate which will then cause several
+ * quotes from that category to be displayed with a button next to each quote.
  * The user chooses whichever quote interests them and clicks the corresponding button.
- * This takes them to a new scene root where the quote, its category and the person who said it are
- * are displayed.
- * Below this are several buttons with languages the user can turn the quote into.
- * After they click the language the quote is displayed below.
- * The user can use a button at the top of this scene to go back to the original scene.
+ * This takes them to a new scene root where the quote, the character who said it and info about
+ * the character are displayed.
+ * The user can use a button at the top of this scene to go back to the original root.
  */
 public class ApiApp extends Application {
     /** The HTTP client. */
@@ -91,20 +91,20 @@ public class ApiApp extends Application {
     private HBox scene2TopRow;
     private Label instructions2;
     private Label author;
-    private Label originalQuote;
-    private HBox buttonRow;
-    private Label translatedQuote;
-
+    private Label theQuote;
     private Label title2;
     private Button backButton;
-    private Button englishButton;
-    private Button spanishButton;
-    private Button frenchButton;
-    private Button germanButton;
+    private ImageView charImgView;
+    private Image charImg;
+    private Label actor;
+    private Label theAliases;
+    private Label dateBorn;
 
+    // Storage Arrays
     private String[] people = new String[6];
     private String[] quotes = new String[6];
 
+    // EventHandlers
     EventHandler<ActionEvent> loadQuotes;
     EventHandler<ActionEvent> loadSecondScene1;
     EventHandler<ActionEvent> loadSecondScene2;
@@ -112,26 +112,8 @@ public class ApiApp extends Application {
     EventHandler<ActionEvent> loadSecondScene4;
     EventHandler<ActionEvent> loadSecondScene5;
     EventHandler<ActionEvent> loadSecondScene6;
-    EventHandler<ActionEvent> usEvent;
-    EventHandler<ActionEvent> spEvent;
-    EventHandler<ActionEvent> frEvent;
-    EventHandler<ActionEvent> deEvent;
     EventHandler<ActionEvent> goBack;
-
-    private static final String US_FLAG = "resources/Flag_of_the_United_States.png";
-    private static final String SP_FLAG = "resources/Spain_flag.png";
-    private static final String FR_FLAG = "resources/Flag_of_France.png";
-    private static final String DE_FLAG = "resources/Germany_flag.png";
-
-    Image usFlag = new Image("file:" + US_FLAG);
-    Image spFlag = new Image("file:" + SP_FLAG);
-    Image frFlag = new Image("file:" + FR_FLAG);
-    Image deFlag = new Image("file:" + DE_FLAG);
-
-    ImageView usImgView = new ImageView(usFlag);
-    ImageView spImgView = new ImageView(spFlag);
-    ImageView frImgView = new ImageView(frFlag);
-    ImageView deImgView = new ImageView(deFlag);
+    EventHandler<ActionEvent> getInfo;
 
     /**
      * Constructs an {@code ApiApp} object.
@@ -141,14 +123,14 @@ public class ApiApp extends Application {
         root1 = new VBox(5);
         scene1TopRow = new HBox(5);
         instructions1 = new Label("Click generate to generate random Stranger Things quotes. Once" +
-        " you get a quote you like click the button next to it to choose it");
+        " you get a quote you like click the button next to it to choose it.");
         quoteBar1 = new HBox();
         quoteBar2 = new HBox();
         quoteBar3 = new HBox();
         quoteBar4 = new HBox();
         quoteBar5 = new HBox();
         quoteBar6 = new HBox();
-        title = new Label("STRANGER THINGS QUOTE GENERATOR & TRANSLATOR");
+        title = new Label("STRANGER THINGS QUOTE & CHARACTER INFO GENERATOR");
         quoteGenerator = new Button("Generate");
         quote1 = new Label("Waiting for quotes...");
         quote2 = new Label("Waiting for quotes...");
@@ -165,19 +147,16 @@ public class ApiApp extends Application {
         // constructs the second root
         root2 = new VBox(5);
         scene2TopRow = new HBox(5);
-        title2 = new Label("STRANGER THINGS QUOTE GENERATOR & TRANSLATOR");
+        title2 = new Label("STRANGER THINGS QUOTE & CHARACTER INFO GENERATOR");
         backButton = new Button("Go back to previous");
-        instructions2 = new Label("Below is the chosen quote's info. Choose a language flag to" +
-            " translate your quote into that language. Once you are satisfied you can click the" +
-            " go back button at the top.");
+        instructions2 = new Label("Below is the chosen quote and info about the character" +
+            " that said it. Once you are satisfied you can click the go back button at the top.");
         author = new Label();
-        originalQuote = new Label();
-        buttonRow = new HBox();
-        englishButton = new Button();
-        spanishButton = new Button();
-        frenchButton = new Button();
-        germanButton = new Button();
-        translatedQuote = new Label("Translated quote will appear here");
+        theQuote = new Label();
+        charImgView = new ImageView();
+        actor = new Label();
+        theAliases = new Label();
+        dateBorn = new Label();
     } // ApiApp
 
     /**{@inheritDoc} */
@@ -193,7 +172,7 @@ public class ApiApp extends Application {
     /** {@inheritDoc} */
     @Override
     public void start(Stage stage) {
-        // setup stage
+        // sets up the stage
         this.stage = stage;
         scene1 = new Scene(root1);
         stage.setTitle("ApiApp!");
@@ -214,11 +193,12 @@ public class ApiApp extends Application {
         button5.setOnAction(loadSecondScene5);
         button6.setOnAction(loadSecondScene6);
         backButton.setOnAction(goBack);
-        createLanguageHandlers();
-        englishButton.setOnAction(usEvent);
 
     } // start
 
+    /**
+     * Creates the frontend appearance of {@code root1}, the initial screen the user sees.
+     */
     private void createFirstScene() {
         root1.setStyle("-fx-background-color: FFEFE0");
         root1.getChildren().addAll(scene1TopRow, instructions1, quoteBar1, quoteBar2, quoteBar3,
@@ -267,41 +247,31 @@ public class ApiApp extends Application {
         quote6.setWrapText(true);
     } // createFirstScene
 
+    /**
+     * Creates the frontend appearance of {@code root2}, the secondary screen the user can access.
+     */
     private void createSecondScene() {
         root2.setStyle("-fx-background-color: FFEFE0");
-        root2.getChildren().addAll(scene2TopRow, instructions2, author,  originalQuote,
-            buttonRow, translatedQuote);
+        root2.getChildren().addAll(scene2TopRow, instructions2, theQuote, author, charImgView,
+            actor, theAliases, dateBorn);
         scene2TopRow.getChildren().addAll(title2, backButton);
-        buttonRow.getChildren().addAll(englishButton, spanishButton, frenchButton, germanButton);
         title2.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(title2, Priority.ALWAYS);
         instructions2.setTextAlignment(TextAlignment.CENTER);
         instructions2.setMaxWidth(600);
         instructions2.setWrapText(true);
-        originalQuote.setMaxWidth(600);
-        originalQuote.setWrapText(true);
-        originalQuote.setPrefHeight(80);
-        usImgView.setFitWidth(177);
-        usImgView.setPreserveRatio(true);
-        spImgView.setFitWidth(142);
-        spImgView.setPreserveRatio(true);
-        frImgView.setFitWidth(142);
-        frImgView.setPreserveRatio(true);
-        deImgView.setFitWidth(162);
-        deImgView.setPreserveRatio(true);
-        englishButton.setGraphic(usImgView);
-        spanishButton.setGraphic(spImgView);
-        frenchButton.setGraphic(frImgView);
-        germanButton.setGraphic(deImgView);
-        englishButton.setMaxWidth(Double.MAX_VALUE);
-        spanishButton.setMaxWidth(Double.MAX_VALUE);
-        frenchButton.setMaxWidth(Double.MAX_VALUE);
-        germanButton.setMaxWidth(Double.MAX_VALUE);
-        translatedQuote.setMaxWidth(600);
-        translatedQuote.setWrapText(true);
-        translatedQuote.setPrefHeight(80);
+        theQuote.setMaxWidth(600);
+        theQuote.setWrapText(true);
+        theQuote.setPrefHeight(80);
+        charImgView.setFitHeight(325);
+        charImgView.setPreserveRatio(true);
+        theAliases.setMaxWidth(600);
+        theAliases.setWrapText(true);
     } // createSecondScene
 
+    /**
+     * Adds color to the Buttons and Labels of the body of {@code root1}.
+     */
     private void setAesthetics() {
         quote1.setTextFill(Color.color(1,0,0));
         button1.setStyle("-fx-background-color: #ff0000");
@@ -317,6 +287,9 @@ public class ApiApp extends Application {
         button6.setStyle("-fx-background-color: #ff00ff");
     } // setAesthetics
 
+    /**
+     * Assigns the EventHandlers to their appropriate actions.
+     */
     private void createHandlers() {
         // EventHandler for getting the quotes
         loadQuotes = (e) -> {
@@ -331,49 +304,36 @@ public class ApiApp extends Application {
         // EventHandlers for loading the second screen
         loadSecondScene1  = (e) -> {
             updateQuoteDisplay(0);
-            scene1.setRoot(root2);
+            getQuoteInfo(0);
         };
         loadSecondScene2  = (e) -> {
             updateQuoteDisplay(1);
-            scene1.setRoot(root2);
+            getQuoteInfo(1);
         };
         loadSecondScene3  = (e) -> {
             updateQuoteDisplay(2);
-            scene1.setRoot(root2);
+            getQuoteInfo(2);
         };
         loadSecondScene4  = (e) -> {
             updateQuoteDisplay(3);
-            scene1.setRoot(root2);
+            getQuoteInfo(3);
         };
         loadSecondScene5  = (e) -> {
             updateQuoteDisplay(4);
-            scene1.setRoot(root2);
+            getQuoteInfo(4);
         };
         loadSecondScene6  = (e) -> {
             updateQuoteDisplay(5);
-            scene1.setRoot(root2);
+            getQuoteInfo(5);
         };
         // EventHandler for going back to the first scene
         goBack = ((e) -> scene1.setRoot(root1));
-
     } // createHandlers
 
-
-    private void createLanguageHandlers() {
-        usEvent = (e) -> {
-            translatedQuote.setText("Translated quote: " + originalQuote.getText().substring(16));
-        };
-        //spEvent = (e) -> {
-        //  getTranslated("sp");
-        //};
-        //frEvent = (e) -> {
-        //  getTranslated("fr");
-        //};
-        //deEvent = (e) -> {
-        //  getTranslated("de");
-        //};
-    }
-
+    /**
+     * Requests 6 quotes from the Random Stranger Things Quote API and then stores and
+     * displays the received quotes.
+     */
     private void getQuotes() {
         String limit = URLEncoder.encode("6", StandardCharsets.UTF_8);
         String urlStr =
@@ -389,6 +349,7 @@ public class ApiApp extends Application {
                 HttpResponse<String> response = HTTP_CLIENT
                     .send(request, BodyHandlers.ofString());
                 String jsonString = response.body().toString();
+                // Converts the response then stores and displays
                 QuoteResult[] resultArray = GSON.fromJson(jsonString, QuoteResult[].class);
                 int count = 0;
                 for (QuoteResult theResult : resultArray) {
@@ -412,10 +373,77 @@ public class ApiApp extends Application {
         t.start();
     } // getQuotes
 
+    /**
+     * Updates the character and quote Labels with the current quote and its character.
+     * @param num is the quote number from 0-5.
+     */
     private void updateQuoteDisplay(int num) {
-        author.setText("Author of quote: " + people[num]);
-        originalQuote.setText("Original quote: " + quotes[num]);
-        translatedQuote.setText("Translated quote: ");
+        author.setText("Character: " + people[num]);
+        theQuote.setText("Quote: \"" + quotes[num] + "\"");
     } // updateQuoteDisplay
+
+    /**
+     * Requests the info for the current character from the Stranger Things Character API.
+     * Displays a photo of the character, the character's birth year, the actor who portrayed
+     * them and any in series aliases.
+     * @param num is the quote number from 0-5.
+     */
+    private void getQuoteInfo(int num) {
+        String charName = URLEncoder.encode(people[num], StandardCharsets.UTF_8);
+        String urlStr =
+            String.format("https://stranger-things-api.fly.dev/api/v1/characters?name=%s"
+            , charName);
+        // The main Runnable
+        Runnable task = () -> {
+            try {
+                // Creates and sends the request then recieves the response
+                HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(urlStr))
+                    .build();
+                HttpResponse<String> response = HTTP_CLIENT
+                    .send(request, BodyHandlers.ofString());
+                String jsonString = response.body().toString();
+                InfoResult[] theResult = GSON.fromJson(jsonString, InfoResult[].class);
+                if (theResult.length == 0) {
+                    throw new IllegalArgumentException("There is no character info for this"
+                    + " character please pick another quote.");
+                }
+                if (people[num].equals("Max Mayfield")) {
+                    throw new IllegalArgumentException("There is insufficient character" +
+                    " info for this character please pick another quote.");
+                }
+                charImg = new Image(theResult[0].photo);
+                Platform.runLater(() -> charImgView.setImage(charImg));
+                Platform.runLater(() -> actor.setText("Portrayed By: " + theResult[0].portrayedBy));
+                String allAliases = "Aliases: ";
+                for (String current : theResult[0].aliases) {
+                    allAliases += (current + ", ");
+                }
+                final String a = allAliases.substring(0, allAliases.length() - 2);
+                Platform.runLater(() -> theAliases.setText(a));
+                Platform.runLater(() -> dateBorn.setText("Birth Year: " + theResult[0].born));
+                Platform.runLater(() -> scene1.setRoot(root2));
+            } catch (IOException | IllegalArgumentException | InterruptedException e) {
+                Platform.runLater(() -> alertError(e));
+            }
+        };
+        // Creates a new thread
+        Thread t = new Thread(task);
+        t.setDaemon(true);
+        t.start();
+    } // getQuoteInfo
+
+    /**
+     * Show a error alert based on {@code cause}.
+     * @param cause a {@link java.lang.Throwable Throwable} that cause the alert
+     */
+    private void alertError(Throwable cause) {
+        TextArea text = new TextArea("Exception: " + cause.toString());
+        text.setEditable(false);
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.getDialogPane().setContent(text);
+        alert.setResizable(false);
+        alert.showAndWait();
+    } // alertError
 
 } // ApiApp
