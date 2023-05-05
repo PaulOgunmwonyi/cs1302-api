@@ -90,6 +90,7 @@ public class ApiApp extends Application {
     private Button button5;
     private Button button6;
 
+    private String[] people = new String[6];
     private String[] quotes = new String[6];
 
     /**
@@ -128,6 +129,44 @@ public class ApiApp extends Application {
     @Override
     public void init() {
         // creates the appearance of the initial scene
+        createFirstScene();
+        setAesthetics();
+    } // init
+
+    /** {@inheritDoc} */
+    @Override
+    public void start(Stage stage) {
+        // setup stage
+        this.stage = stage;
+        scene1 = new Scene(root1);
+        stage.setTitle("ApiApp!");
+        stage.setScene(scene1);
+        stage.setOnCloseRequest(event -> Platform.exit());
+        stage.setWidth(700);
+        stage.setHeight(600);
+        stage.show();
+        stage.setResizable(false);
+
+        // EventHandler for getting the quotes
+        EventHandler<ActionEvent> loadQuotes = (e) -> {
+            getQuotes();
+            button1.setDisable(false);
+            button2.setDisable(false);
+            button3.setDisable(false);
+            button4.setDisable(false);
+            button5.setDisable(false);
+            button6.setDisable(false);
+        };
+        quoteGenerator.setOnAction(loadQuotes);
+
+    } // start
+
+
+    /**
+     * Creates the frontend appearance of {@code root1}, the initial screen the user sees.
+     */
+    private void createFirstScene() {
+        root1.setStyle("-fx-background-color: FFEFE0");
         root1.getChildren().addAll(scene1TopRow, instructions1, quoteBar1, quoteBar2, quoteBar3,
             quoteBar4, quoteBar5, quoteBar6);
         scene1TopRow.getChildren().addAll(title, dropDown, quoteGenerator);
@@ -175,37 +214,7 @@ public class ApiApp extends Application {
         quote5.setWrapText(true);
         quote6.setMaxWidth(560);
         quote6.setWrapText(true);
-        setAesthetics();
-    } // init
-
-    /** {@inheritDoc} */
-    @Override
-    public void start(Stage stage) {
-        // setup stage
-        this.stage = stage;
-        scene1 = new Scene(root1);
-        stage.setTitle("ApiApp!");
-        stage.setScene(scene1);
-        stage.setOnCloseRequest(event -> Platform.exit());
-        stage.setWidth(700);
-        stage.setHeight(600);
-        stage.show();
-        stage.setResizable(false);
-
-        // EventHandler for getting the quotes
-        EventHandler<ActionEvent> loadQuotes = (e) -> {
-            getQuotes();
-            button1.setDisable(false);
-            button2.setDisable(false);
-            button3.setDisable(false);
-            button4.setDisable(false);
-            button5.setDisable(false);
-            button6.setDisable(false);
-        };
-        quoteGenerator.setOnAction(loadQuotes);
-
-    } // start
-
+    }
 
     private void setAesthetics() {
         quote1.setTextFill(Color.color(1,0,0));
@@ -244,6 +253,7 @@ public class ApiApp extends Application {
                 int count = 0;
                 for (QuoteResult theQuote : quoteArray) {
                     quotes[count] = theQuote.quote;
+                    people[count] = theQuote.author;
                     count++;
                 }
                 Platform.runLater(() -> quote1.setText(quotes[0]));
