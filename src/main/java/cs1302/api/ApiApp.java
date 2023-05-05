@@ -38,14 +38,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
 /**
- * This project is a random Stranger Things quote generator that can later be used to see info
- * about the character who said the chosen quote.
- * On the first screen of the project the user can click generate which will then cause several
- * quotes from that category to be displayed with a button next to each quote.
- * The user chooses whichever quote interests them and clicks the corresponding button.
- * This takes them to a new scene root where the quote, the character who said it and info about
- * the character are displayed.
- * The user can use a button at the top of this scene to go back to the original root.
+ * ApiApp class.
  */
 public class ApiApp extends Application {
     /** The HTTP client. */
@@ -60,286 +53,121 @@ public class ApiApp extends Application {
         .create();
 
     private Stage stage;
-    private Scene scene1;
-    private VBox root1;
-    private VBox root2;
+    private Scene scene;
+    private VBox root;
 
-    private HBox scene1TopRow;
-    private Label instructions1;
-    private HBox quoteBar1;
-    private HBox quoteBar2;
-    private HBox quoteBar3;
-    private HBox quoteBar4;
-    private HBox quoteBar5;
-    private HBox quoteBar6;
-
+    private HBox topRow;
     private Label title;
-    private Button quoteGenerator;
-    private Label quote1;
-    private Label quote2;
-    private Label quote3;
-    private Label quote4;
-    private Label quote5;
-    private Label quote6;
-    private Button button1;
-    private Button button2;
-    private Button button3;
-    private Button button4;
-    private Button button5;
-    private Button button6;
-
-    private HBox scene2TopRow;
-    private Label instructions2;
-    private Label author;
-    private Label theQuote;
-    private Label title2;
-    private Button backButton;
-    private ImageView charImgView;
-    private Image charImg;
-    private Label actor;
-    private Label theAliases;
-    private Label dateBorn;
-
-    // Storage Arrays
-    private String[] people = new String[6];
-    private String[] quotes = new String[6];
-
-    // EventHandlers
-    EventHandler<ActionEvent> loadQuotes;
-    EventHandler<ActionEvent> loadSecondScene1;
-    EventHandler<ActionEvent> loadSecondScene2;
-    EventHandler<ActionEvent> loadSecondScene3;
-    EventHandler<ActionEvent> loadSecondScene4;
-    EventHandler<ActionEvent> loadSecondScene5;
-    EventHandler<ActionEvent> loadSecondScene6;
-    EventHandler<ActionEvent> goBack;
-    EventHandler<ActionEvent> getInfo;
+    private TextField url;
+    private Button search;
+    private Label instructions;
+    private Label movieTitle;
+    private Label movieRelease;
+    private Label moviePlot;
+    private Label movieActors;
+    private Label leadActor;
+    private Label leadNetWorth;
+    private Label leadBirthday;
+    private Label leadAge;
+    private ImageView thePoster;
+    private Label rating;
+    private Label disclaimer;
+    private Image theImg;
 
     /**
      * Constructs an {@code ApiApp} object.
      */
     public ApiApp() {
-        // constructs the first root
-        root1 = new VBox(5);
-        scene1TopRow = new HBox(5);
-        instructions1 = new Label("Click generate to generate random Stranger Things quotes. Once" +
-        " you get a quote you like click the button next to it to choose it.");
-        quoteBar1 = new HBox();
-        quoteBar2 = new HBox();
-        quoteBar3 = new HBox();
-        quoteBar4 = new HBox();
-        quoteBar5 = new HBox();
-        quoteBar6 = new HBox();
-        title = new Label("STRANGER THINGS QUOTE & CHARACTER INFO GENERATOR");
-        quoteGenerator = new Button("Generate");
-        quote1 = new Label("Waiting for quotes...");
-        quote2 = new Label("Waiting for quotes...");
-        quote3 = new Label("Waiting for quotes...");
-        quote4 = new Label("Waiting for quotes...");
-        quote5 = new Label("Waiting for quotes...");
-        quote6 = new Label("Waiting for quotes...");
-        button1 = new Button("Choose this quote");
-        button2 = new Button("Choose this quote");
-        button3 = new Button("Choose this quote");
-        button4 = new Button("Choose this quote");
-        button5 = new Button("Choose this quote");
-        button6 = new Button("Choose this quote");
-        // constructs the second root
-        root2 = new VBox(5);
-        scene2TopRow = new HBox(5);
-        title2 = new Label("STRANGER THINGS QUOTE & CHARACTER INFO GENERATOR");
-        backButton = new Button("Go back to previous");
-        instructions2 = new Label("Below is the chosen quote and info about the character" +
-            " that said it. Once you are satisfied you can click the go back button at the top.");
-        author = new Label();
-        theQuote = new Label();
-        charImgView = new ImageView();
-        actor = new Label();
-        theAliases = new Label();
-        dateBorn = new Label();
+        root = new VBox(5);
+        topRow = new HBox();
+        title = new Label("SERIES & LEAD ACTOR SEARCH");
+        url = new TextField("Type here");
+        search = new Button("Search");
+        instructions = new Label("Type a movie or television series title into the above"
+            + " search bar.");
+        movieTitle = new Label("Title: Waiting for info...");
+        movieRelease = new Label("Release: Waiting for info...");
+        moviePlot = new Label("Plot: Waiting for info...");
+        movieActors = new Label("Actors: Waiting for info...");
+        leadActor = new Label("Lead Actor: Waiting for info...");
+        leadNetWorth = new Label("Lead Actor Net Worth: Waiting for info...");
+        leadBirthday = new Label("Lead Actor Birthday: Waiting for info...");
+        leadAge = new Label("Lead Actor Age: Waiting for info...");
+        thePoster = new ImageView();
+        rating = new Label("Movie Rating: Waiting for info...");
+        disclaimer = new Label("Disclaimer: If the database does not have certain information"
+        + " then that section will display \"N/A\"");
     } // ApiApp
 
     /**{@inheritDoc} */
     @Override
     public void init() {
-        // creates the appearance of the initial scene
-        createFirstScene();
-        setAesthetics();
-        // creates the appearance of the second scene
-        createSecondScene();
+        // Initializes the frontend of the app
+        root.getChildren().addAll(topRow, instructions,  movieTitle, rating, movieRelease,
+            moviePlot, movieActors, thePoster, leadActor, leadNetWorth, leadBirthday, leadAge,
+            disclaimer);
+        topRow.getChildren().addAll(title, url, search);
+        HBox.setHgrow(url, Priority.ALWAYS);
+        url.setMaxWidth(Double.MAX_VALUE);
+        instructions.setTextAlignment(TextAlignment.CENTER);
+        movieTitle.setPrefHeight(25);
+        movieRelease.setPrefHeight(25);
+        moviePlot.setPrefHeight(75);
+        moviePlot.setMaxWidth(500);
+        moviePlot.setWrapText(true);
+        movieRelease.setPrefHeight(25);
+        movieActors.setPrefHeight(25);
+        thePoster.setFitHeight(260);
+        thePoster.setPreserveRatio(true);
+        leadActor.setPrefHeight(25);
+        leadNetWorth.setPrefHeight(25);
+        leadBirthday.setPrefHeight(25);
+        leadAge.setPrefHeight(25);
+        rating.setPrefHeight(25);
+        disclaimer.setMaxWidth(500);
+        disclaimer.setWrapText(true);
+        root.setStyle("-fx-background-color: FFEFE0");
+        movieTitle.setTextFill(Color.color(1,0,0));
+        rating.setTextFill(Color.color(1,0,0));
+        movieRelease.setTextFill(Color.color(1,0,0));
+        moviePlot.setTextFill(Color.color(1,0,0));
+        movieActors.setTextFill(Color.color(1,0,0));
+        leadActor.setTextFill(Color.color(0,0,1));
+        leadNetWorth.setTextFill(Color.color(0,0,1));
+        leadBirthday.setTextFill(Color.color(0,0,1));
+        leadAge.setTextFill(Color.color(0,0,1));
     } // init
 
     /** {@inheritDoc} */
     @Override
     public void start(Stage stage) {
-        // sets up the stage
         this.stage = stage;
-        scene1 = new Scene(root1);
+        scene = new Scene(root);
         stage.setTitle("ApiApp!");
-        stage.setScene(scene1);
+        stage.setScene(scene);
         stage.setOnCloseRequest(event -> Platform.exit());
-        stage.setWidth(700);
-        stage.setHeight(600);
+        stage.setWidth(500);
+        stage.setHeight(700);
         stage.show();
         stage.setResizable(false);
 
-        // creates and sets all of the handlers to their appropriate buttons
-        createHandlers();
-        quoteGenerator.setOnAction(loadQuotes);
-        button1.setOnAction(loadSecondScene1);
-        button2.setOnAction(loadSecondScene2);
-        button3.setOnAction(loadSecondScene3);
-        button4.setOnAction(loadSecondScene4);
-        button5.setOnAction(loadSecondScene5);
-        button6.setOnAction(loadSecondScene6);
-        backButton.setOnAction(goBack);
-
+        // The Eventhandler for using the app
+        EventHandler<ActionEvent> getMovieInfo = (e) -> {
+            getMovie();
+        };
+        search.setOnAction(getMovieInfo);
     } // start
 
     /**
-     * Creates the frontend appearance of {@code root1}, the initial screen the user sees.
+     * Requests for and displays the movie data using the inputted name.
+     * Also triggers the second API request method afterwards.
      */
-    private void createFirstScene() {
-        root1.setStyle("-fx-background-color: FFEFE0");
-        root1.getChildren().addAll(scene1TopRow, instructions1, quoteBar1, quoteBar2, quoteBar3,
-            quoteBar4, quoteBar5, quoteBar6);
-        scene1TopRow.getChildren().addAll(title, quoteGenerator);
-        quoteBar1.getChildren().addAll(quote1, button1);
-        quoteBar2.getChildren().addAll(quote2, button2);
-        quoteBar3.getChildren().addAll(quote3, button3);
-        quoteBar4.getChildren().addAll(quote4, button4);
-        quoteBar5.getChildren().addAll(quote5, button5);
-        quoteBar6.getChildren().addAll(quote6, button6);
-        title.setMaxWidth(Double.MAX_VALUE);
-        instructions1.setTextAlignment(TextAlignment.CENTER);
-        instructions1.setMaxWidth(600);
-        instructions1.setWrapText(true);
-        quoteBar1.setPrefHeight(77);
-        quoteBar2.setPrefHeight(77);
-        quoteBar3.setPrefHeight(77);
-        quoteBar4.setPrefHeight(77);
-        quoteBar5.setPrefHeight(77);
-        quoteBar6.setPrefHeight(77);
-        button1.setDisable(true);
-        button2.setDisable(true);
-        button3.setDisable(true);
-        button4.setDisable(true);
-        button5.setDisable(true);
-        button6.setDisable(true);
-        HBox.setHgrow(title, Priority.ALWAYS);
-        HBox.setHgrow(quote1, Priority.ALWAYS);
-        HBox.setHgrow(quote2, Priority.ALWAYS);
-        HBox.setHgrow(quote3, Priority.ALWAYS);
-        HBox.setHgrow(quote4, Priority.ALWAYS);
-        HBox.setHgrow(quote5, Priority.ALWAYS);
-        HBox.setHgrow(quote6, Priority.ALWAYS);
-        quote1.setMaxWidth(560);
-        quote1.setWrapText(true);
-        quote2.setMaxWidth(560);
-        quote2.setWrapText(true);
-        quote3.setMaxWidth(560);
-        quote3.setWrapText(true);
-        quote4.setMaxWidth(560);
-        quote4.setWrapText(true);
-        quote5.setMaxWidth(560);
-        quote5.setWrapText(true);
-        quote6.setMaxWidth(560);
-        quote6.setWrapText(true);
-    } // createFirstScene
-
-    /**
-     * Creates the frontend appearance of {@code root2}, the secondary screen the user can access.
-     */
-    private void createSecondScene() {
-        root2.setStyle("-fx-background-color: FFEFE0");
-        root2.getChildren().addAll(scene2TopRow, instructions2, theQuote, author, charImgView,
-            actor, theAliases, dateBorn);
-        scene2TopRow.getChildren().addAll(title2, backButton);
-        title2.setMaxWidth(Double.MAX_VALUE);
-        HBox.setHgrow(title2, Priority.ALWAYS);
-        instructions2.setTextAlignment(TextAlignment.CENTER);
-        instructions2.setMaxWidth(600);
-        instructions2.setWrapText(true);
-        theQuote.setMaxWidth(600);
-        theQuote.setWrapText(true);
-        theQuote.setPrefHeight(80);
-        charImgView.setFitHeight(325);
-        charImgView.setPreserveRatio(true);
-        theAliases.setMaxWidth(600);
-        theAliases.setWrapText(true);
-    } // createSecondScene
-
-    /**
-     * Adds color to the Buttons and Labels of the body of {@code root1}.
-     */
-    private void setAesthetics() {
-        quote1.setTextFill(Color.color(1,0,0));
-        button1.setStyle("-fx-background-color: #ff0000");
-        quote2.setTextFill(Color.color(1,.5,0));
-        button2.setStyle("-fx-background-color: #ff8000");
-        quote3.setTextFill(Color.color(0,1,0));
-        button3.setStyle("-fx-background-color: #00ff00");
-        quote4.setTextFill(Color.color(0,1,1));
-        button4.setStyle("-fx-background-color: #00ffff");
-        quote5.setTextFill(Color.color(0,0,1));
-        button5.setStyle("-fx-background-color: #0000ff");
-        quote6.setTextFill(Color.color(1,0,1));
-        button6.setStyle("-fx-background-color: #ff00ff");
-    } // setAesthetics
-
-    /**
-     * Assigns the EventHandlers to their appropriate actions.
-     */
-    private void createHandlers() {
-        // EventHandler for getting the quotes
-        loadQuotes = (e) -> {
-            getQuotes();
-            button1.setDisable(false);
-            button2.setDisable(false);
-            button3.setDisable(false);
-            button4.setDisable(false);
-            button5.setDisable(false);
-            button6.setDisable(false);
-        };
-        // EventHandlers for loading the second screen
-        loadSecondScene1  = (e) -> {
-            updateQuoteDisplay(0);
-            getQuoteInfo(0);
-        };
-        loadSecondScene2  = (e) -> {
-            updateQuoteDisplay(1);
-            getQuoteInfo(1);
-        };
-        loadSecondScene3  = (e) -> {
-            updateQuoteDisplay(2);
-            getQuoteInfo(2);
-        };
-        loadSecondScene4  = (e) -> {
-            updateQuoteDisplay(3);
-            getQuoteInfo(3);
-        };
-        loadSecondScene5  = (e) -> {
-            updateQuoteDisplay(4);
-            getQuoteInfo(4);
-        };
-        loadSecondScene6  = (e) -> {
-            updateQuoteDisplay(5);
-            getQuoteInfo(5);
-        };
-        // EventHandler for going back to the first scene
-        goBack = ((e) -> scene1.setRoot(root1));
-    } // createHandlers
-
-    /**
-     * Requests 6 quotes from the Random Stranger Things Quote API and then stores and
-     * displays the received quotes.
-     */
-    private void getQuotes() {
-        String limit = URLEncoder.encode("6", StandardCharsets.UTF_8);
+    private void getMovie() {
+        String movie = URLEncoder.encode(url.getText(), StandardCharsets.UTF_8);
+        String apiKey = URLEncoder.encode("84fa6a8f", StandardCharsets.UTF_8);;
         String urlStr =
-            String.format("https://strangerthings-quotes.vercel.app/api/quotes/%s"
-            , limit);
-        // The main Runnable
+            String.format("http://www.omdbapi.com/?apikey=%s&t=%s", apiKey, movie);
+         // The main Runnable
         Runnable task = () -> {
             try {
                 // Creates and sends the request then recieves the response
@@ -349,80 +177,21 @@ public class ApiApp extends Application {
                 HttpResponse<String> response = HTTP_CLIENT
                     .send(request, BodyHandlers.ofString());
                 String jsonString = response.body().toString();
-                // Converts the response then stores and displays
-                QuoteResult[] resultArray = GSON.fromJson(jsonString, QuoteResult[].class);
-                int count = 0;
-                for (QuoteResult theResult : resultArray) {
-                    quotes[count] = theResult.quote;
-                    people[count] = theResult.author;
-                    count++;
+                if (jsonString.equals("{\"Response\":\"False\",\"Error\":\"Movie not found!\"}")) {
+                    throw new IllegalArgumentException("This is not a valid movie or series title."
+                    + " Please enter a valid title.");
                 }
-                Platform.runLater(() -> quote1.setText(quotes[0]));
-                Platform.runLater(() -> quote2.setText(quotes[1]));
-                Platform.runLater(() -> quote3.setText(quotes[2]));
-                Platform.runLater(() -> quote4.setText(quotes[3]));
-                Platform.runLater(() -> quote5.setText(quotes[4]));
-                Platform.runLater(() -> quote6.setText(quotes[5]));
-            } catch (IOException | IllegalArgumentException | InterruptedException e) {
-                System.err.println(e);
-            }
-        };
-        // Creates a new thread
-        Thread t = new Thread(task);
-        t.setDaemon(true);
-        t.start();
-    } // getQuotes
-
-    /**
-     * Updates the character and quote Labels with the current quote and its character.
-     * @param num is the quote number from 0-5.
-     */
-    private void updateQuoteDisplay(int num) {
-        author.setText("Character: " + people[num]);
-        theQuote.setText("Quote: \"" + quotes[num] + "\"");
-    } // updateQuoteDisplay
-
-    /**
-     * Requests the info for the current character from the Stranger Things Character API.
-     * Displays a photo of the character, the character's birth year, the actor who portrayed
-     * them and any in series aliases.
-     * @param num is the quote number from 0-5.
-     */
-    private void getQuoteInfo(int num) {
-        String charName = URLEncoder.encode(people[num], StandardCharsets.UTF_8);
-        String urlStr =
-            String.format("https://stranger-things-api.fly.dev/api/v1/characters?name=%s"
-            , charName);
-        // The main Runnable
-        Runnable task = () -> {
-            try {
-                // Creates and sends the request then recieves the response
-                HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(urlStr))
-                    .build();
-                HttpResponse<String> response = HTTP_CLIENT
-                    .send(request, BodyHandlers.ofString());
-                String jsonString = response.body().toString();
-                InfoResult[] theResult = GSON.fromJson(jsonString, InfoResult[].class);
-                if (theResult.length == 0) {
-                    throw new IllegalArgumentException("There is no character info for this"
-                    + " character please pick another quote.");
-                }
-                if (people[num].equals("Max Mayfield")) {
-                    throw new IllegalArgumentException("There is insufficient character" +
-                    " info for this character please pick another quote.");
-                }
-                charImg = new Image(theResult[0].photo);
-                Platform.runLater(() -> charImgView.setImage(charImg));
-                Platform.runLater(() -> actor.setText("Portrayed By: " + theResult[0].portrayedBy));
-                String allAliases = "Aliases: ";
-                for (String current : theResult[0].aliases) {
-                    allAliases += (current + ", ");
-                }
-                final String a = allAliases.substring(0, allAliases.length() - 2);
-                Platform.runLater(() -> theAliases.setText(a));
-                Platform.runLater(() -> dateBorn.setText("Birth Year: " + theResult[0].born));
-                Platform.runLater(() -> scene1.setRoot(root2));
+                MovieResult theResult = GSON.fromJson(jsonString, MovieResult.class);
+                Platform.runLater(() -> { // Displaying the response information
+                    movieTitle.setText("Movie Title: " + theResult.title);
+                    movieRelease.setText("Released: " + theResult.released);
+                    moviePlot.setText("Plot: " + theResult.plot);
+                    movieActors.setText("Actors: " + theResult.actors);
+                    theImg = new Image(theResult.poster);
+                    thePoster.setImage(theImg);
+                    rating.setText("Rating: " + theResult.imdbRating);
+                });
+                getActorInfo(theResult.actors);
             } catch (IOException | IllegalArgumentException | InterruptedException e) {
                 Platform.runLater(() -> alertError(e));
             }
@@ -431,7 +200,73 @@ public class ApiApp extends Application {
         Thread t = new Thread(task);
         t.setDaemon(true);
         t.start();
-    } // getQuoteInfo
+    } // getMovie
+
+    /**
+     * Requests for and displays the lead actor information.
+     * If the database does not have the specificed information then "N/A" is displayed.
+     * @param actorList the list of actors from the movie API response.
+     */
+    private void getActorInfo(String actorList) {
+        int commaIndex = actorList.indexOf(",");
+        String theActor;
+        if (commaIndex > 0) {
+            theActor = actorList.substring(0, commaIndex);
+        } else {
+            theActor = actorList;
+        }
+        String actor = URLEncoder.encode(theActor, StandardCharsets.UTF_8);
+        String urlStr =
+            String.format("https://api.api-ninjas.com/v1/celebrity?name=%s"
+            , actor);
+        Runnable task = () -> {
+            try {
+                // Creates and sends the request then recieves the response
+                HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(urlStr))
+                    .header("X-Api-Key" ,"znBjJAWWz/khdtaf2dPDrw==DzYrOkIE6Uu7heiF")
+                    .build();
+                HttpResponse<String> response = HTTP_CLIENT
+                    .send(request, BodyHandlers.ofString());
+                String jsonString = response.body().toString();
+                ActorResult[] resultArray = GSON.fromJson(jsonString, ActorResult[].class);
+                if (resultArray.length != 0) {
+                    Platform.runLater(() -> { // Displaying the response information
+                        leadActor.setText("Lead Actor Name: " + theActor);
+                        if (resultArray[0].netWorth == null) {
+                            leadNetWorth.setText("Lead Actor Net Worth: N/A");
+                        } else {
+                            leadNetWorth.setText("Lead Actor Net Worth: " +
+                                resultArray[0].netWorth);
+                        }
+                        if (resultArray[0].birthday == null) {
+                            leadBirthday.setText("Lead Actor Birthday: N/A");
+                        } else {
+                            leadBirthday.setText("Lead Actor Birthday: " + resultArray[0].birthday);
+                        }
+                        if (resultArray[0].age == null) {
+                            leadAge.setText("Lead Actor Age: N/A");
+                        } else {
+                            leadAge.setText("Lead Actor Age: " + resultArray[0].age);
+                        }
+                    });
+                } else {
+                    Platform.runLater(() -> {
+                        leadActor.setText("Lead Actor Name: " + theActor);
+                        leadNetWorth.setText("Lead Actor Net Worth: N/A");
+                        leadBirthday.setText("Lead Actor Birthday: N/A");
+                        leadAge.setText("Lead Actor Age: N/A");
+                    });
+                }
+            } catch (IOException | IllegalArgumentException | InterruptedException e) {
+                System.err.println(e);
+            }
+        };
+        // Creates a new thread
+        Thread t = new Thread(task);
+        t.setDaemon(true);
+        t.start();
+    } // getActorInfo
 
     /**
      * Show a error alert based on {@code cause}.
@@ -446,4 +281,4 @@ public class ApiApp extends Application {
         alert.showAndWait();
     } // alertError
 
-} // ApiApp
+}
